@@ -67,7 +67,6 @@
     },
     "hotend_options": {
       "V6": ["V6_Mount_Front.stl", "V6_Mount_Rear.stl"],
-      "TaiChi": ["TaiChi_Mount_Front.stl", "TaiChi_Mount_Rear.stl"],
       "Spider Pro": "SpiderPro_Mount.stl",
       "Revo Voron": "RevoVoron_Mount.stl",
       "Rapido HF": "RapidoHF_Mount.stl",

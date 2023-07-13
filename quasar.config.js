@@ -1,4 +1,4 @@
-/* eslint-env node */
+\/* eslint-env node */
 
 /*
  * This file runs in a Node context (it's NOT transpiled by Babel), so use only
@@ -56,7 +56,7 @@ module.exports = configure(function (/* ctx */) {
           },
         },
       },
-      // publicPath: "DragonBurnerConfig",
+      publicPath: "DragonBurnerConfig",
       target: {
         browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
         node: 'node16',

@@ -95,7 +95,7 @@
         :disable="!canSubmit"
         color="primary"
         icon="download"
-        label="Download STLs"
+        label="Download STL Files"
         @click="download"
       />
     </div>

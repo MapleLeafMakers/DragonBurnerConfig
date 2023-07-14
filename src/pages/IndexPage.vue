@@ -141,7 +141,7 @@ onMounted(() => {
       onOptionsUpdate();
     },
   });
-  render.LoadModelFromFileList(['step/DragonBurnerAssembly.step']);
+  render.LoadModelFromUrlList(['step/DragonBurnerAssembly.step']);
 });
 
 const hotend_options = computed(() => {

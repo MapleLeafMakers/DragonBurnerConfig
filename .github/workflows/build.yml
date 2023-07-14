@@ -26,7 +26,7 @@ jobs:
       - name: Publish to GH Pages
         run: |
           git config user.name "Github Actions Bot"
-          git config user.email "MapleLeafMakers@gmail.com"
+          git config user.email "chirpy@gmail.com"
           git fetch
           git checkout gh-pages
           git rm assets/* || true

@@ -167,7 +167,6 @@ const hotend_options = computed(() => {
 const onOptionsUpdate = () => {
   if (!modelLoaded.value) return;
   let stl_files = stlFiles.value;
-  console.log(stl_files);
   const always_components = [
     '4010 Blower Fan',
     hotend_fan_size.value === '30mm' ? '3010 Axial Fan' : '2510 Axial Fan',
@@ -175,13 +174,11 @@ const onOptionsUpdate = () => {
   let visible_components = stl_files.map((stl) =>
     stl.replace(/\.stl$/i, '').replaceAll('/', '__')
   );
-  console.log(visible_components, always_components);
 
   render.GetViewer().mainModel.EnumerateMeshes((mesh) => {
     const show =
       visible_components.indexOf(mesh.name) !== -1 ||
       always_components.indexOf(mesh.name) !== -1;
-    console.log(mesh.name, show);
     mesh.visible = show;
   });
 
@@ -244,9 +241,10 @@ const download = async () => {
 
   for (let f of stl_files) {
     const fileUrl = `https://raw.githubusercontent.com/chirpy2605/voron/main/V0/Dragon_Burner/STLs/v0.2/${f}`;
-    const content = (await axios.get(fileUrl)).data;
+    const content = (await axios.get(fileUrl, { responseType: 'arraybuffer' }))
+      .data;
     const baseName = f.indexOf('/') === -1 ? f : f.split('/')[1];
-    zip.file(baseName, content);
+    zip.file(baseName, content, { binary: true });
   }
   const zipFile = await zip.generateAsync({ type: 'blob' });
   const link = document.createElement('a');

@@ -134,7 +134,7 @@ onMounted(() => {
       new OV.Coord3D(0, 0, 1),
       45
     ),
-    backgroundColor: new OV.RGBAColor(255, 255, 255, 0),
+    backgroundColor: new OV.RGBAColor(255, 255, 255, 255),
     onModelLoaded: () => {
       modelLoaded.value = true;
       viewerContainer.value.style.opacity = 1;

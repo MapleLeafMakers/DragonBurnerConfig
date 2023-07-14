@@ -135,7 +135,7 @@ onMounted(() => {
       45
     ),
     backgroundColor: new OV.RGBAColor(255, 255, 255, 255),
-    defaultColor : new OV.RGBColor (200, 200, 200),
+    edgeSettings : new OV.EdgeSettings (true, new OV.RGBColor (0, 0, 0), 1),
     onModelLoaded: () => {
       modelLoaded.value = true;
       viewerContainer.value.style.opacity = 1;

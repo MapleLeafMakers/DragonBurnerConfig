@@ -22,7 +22,7 @@
           href="https://github.com/chirpy2605/voron/tree/main/V0/Dragon_Burner"
           target="_blank"
         >
-          <q-tooltip>Go to Dragon Burner Repository</q-tooltip>
+          <q-tooltip>Dragon Burner Repo</q-tooltip>
         </q-btn>
       </q-toolbar>
     </q-header>

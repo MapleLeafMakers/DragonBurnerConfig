@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-toolbar-title> Dragon Burner v7 Configurator (beta)</q-toolbar-title>
+        <q-toolbar-title> Dragon Burner v7 Configurator (by <a href="https://github.com/https://github.com/MapleLeafMakers">Maple Leaf Makers</a>)</q-toolbar-title>
         <q-space />
         <q-btn
           flat

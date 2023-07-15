@@ -7,12 +7,22 @@
         <q-btn
           flat
           round
-          icon="mdi-github"
+          icon="mdi-leaf-maple"
           size="md"
           href="https://github.com/chirpy2605/voron/tree/main/V0/Dragon_Burner"
           target="_blank"
         >
           <q-tooltip>View on GitHub</q-tooltip>
+        </q-btn>
+        <q-btn
+          flat
+          round
+          icon="mdi-github"
+          size="md"
+          href="https://github.com/https://github.com/MapleLeafMakers"
+          target="_blank"
+        >
+          <q-tooltip>Made by Maple Leaf Makers</q-tooltip>
         </q-btn>
       </q-toolbar>
     </q-header>

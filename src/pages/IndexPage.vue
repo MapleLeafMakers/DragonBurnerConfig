@@ -170,8 +170,14 @@ const getMeshColor = (mesh: any) => {
       mesh.name
     ) === -1
   ) {
-    return [0.23, 0.23, 0.23]
-  }
+    return [
+      modelColor.value.r / 255,
+      modelColor.value.g / 255,
+      modelColor.value.b / 255,
+    ];
+  } else {
+    return [0.23, 0.23, 0.23];
+  };
   return mesh.color;
 };
 

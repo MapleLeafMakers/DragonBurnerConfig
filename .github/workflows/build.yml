@@ -34,13 +34,13 @@ jobs:
           git rm icons/* || true
           git rm img/* || true
           git rm libs/* || true
-          git rm step/* || true          
+          git rm step/* || true
           cp -Rv dist/spa/* .
           git add -v index.html
           git add -v assets/
           git add -v icons/
           git add -v img/
-          git add -v step/
+          git add -v DragonBurnerAssembly.json
           git add -v libs/
           git add favicon.ico
           git commit -m 'Built from ${{ github.ref }}'

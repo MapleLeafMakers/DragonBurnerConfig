@@ -21,6 +21,7 @@ jobs:
       - name: Build
         run: |
           npm install
+          node --experimental-wasm-eh scripts/step2json.js DragonBurnerAssembly.step > public/DragonBurnerAssembly.json
           npm run build
 
       - name: Publish to GH Pages

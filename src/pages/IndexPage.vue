@@ -33,6 +33,20 @@
           class="online_3d_viewer"
           style="height: 375px; opacity: 0"
         ></div>
+        <q-btn
+          fab-mini
+          class="bg-grey-1"
+          icon="mdi-palette"
+          style="position: absolute; top: 24px; left: 24px"
+          ><q-menu>
+            <q-color
+              :model-value="rgbToHex(modelColor)"
+              @update:model-value="onUpdateModelColor"
+              no-header
+              no-footer
+            />
+          </q-menu>
+        </q-btn>
       </div>
       <div class="col-xs-12 col-md-6">
         <q-select
@@ -105,23 +119,143 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import * as OV from 'online-3d-viewer';
+import * as THREE from 'three';
+
 import info from 'src/v7.json';
 import axios from 'axios';
 import JSZip from 'jszip';
+
+import { colors } from 'quasar';
+const { rgbToHex, hexToRgb } = colors;
+
 const extruder = ref<string>();
 const hotend = ref<string>();
 const probe = ref<string>('');
 const nozzle_led = ref<string>('');
 const logo_led = ref<string>('');
+
+let defaultColor: { r: number; g: number; b: number } = { r: 142, g: 41, b: 0 };
+try {
+  defaultColor = JSON.parse(localStorage.getItem('modelColor')) || defaultColor;
+} catch (err) {
+  // let 'er go
+}
+
+const modelColor = ref<{ r: number; g: number; b: number }>(defaultColor);
+
 const adxl_mount = ref<boolean>(false);
 const hotend_fan_size = ref<string>('30mm');
 const modelLoaded = ref<boolean>(false);
 const viewerContainer = ref();
-let render;
+let modelSource: any;
+let render: OV.EmbeddedViewer;
 
 const canSubmit = computed(() => {
   return extruder.value && hotend.value;
 });
+
+const onUpdateModelColor = (color: string) => {
+  modelColor.value = hexToRgb(color);
+  loadModel(recolorModelSrc(modelSource));
+  localStorage.setItem('modelColor', JSON.stringify(modelColor.value));
+};
+
+const getMeshColor = (mesh: any) => {
+  if (mesh.name.startsWith('[c]_')) {
+    return [0.8, 0.8, 0.8];
+  }
+
+  if (
+    ['4010 Blower Fan', '3010 Axial Fan', '2510 Axial Fan'].indexOf(
+      mesh.name
+    ) === -1
+  ) {
+    return [
+      modelColor.value.r / 255,
+      modelColor.value.g / 255,
+      modelColor.value.b / 255,
+    ];
+  }
+  return mesh.color;
+};
+
+const recolorModelSrc = (modelSrc: any) => {
+  return {
+    ...modelSrc,
+    meshes: modelSrc.meshes.map((m) => ({
+      ...m,
+      color: getMeshColor(m),
+    })),
+  };
+};
+
+const loadModel = async (modelSrc) => {
+  const [importResult, threeObject] = await new Promise<[OV.ImportResult, any]>(
+    (resolve, reject) => {
+      const importer = render.modelLoader.importer.importers.filter((i) =>
+        i.CanImportExtension('step')
+      )[0] as OV.ImporterOcct;
+      importer.Clear();
+      importer.name = 'DragonBurnerAssembly';
+      importer.model = new OV.Model();
+      importer.extension = 'step';
+      importer.error = false;
+      importer.message = null;
+      importer.ResetContent();
+
+      importer.ImportResultJson(modelSrc, () => {
+        render.modelLoader.importer.model = importer.GetModel();
+        let importResult = new OV.ImportResult();
+        importResult.mainFile = 'DragonBurnerAssembly.step';
+        importResult.model = importer.GetModel();
+        importResult.upVector = importer.GetUpDirection();
+
+        let params = new OV.ModelToThreeConversionParams();
+        params.forceMediumpForMaterials =
+          render.modelLoader.hasHighpDriverIssue;
+        let output = new OV.ModelToThreeConversionOutput();
+        OV.ConvertModelToThreeObject(importResult.model, params, output, {
+          onTextureLoaded: () => {
+            render.GetViewer().Render();
+          },
+          onModelLoaded: (threeObject: THREE.Object3D) => {
+            render.modelLoader.defaultMaterial = output.defaultMaterial;
+            if (importResult.upVector === OV.Direction.X) {
+              let rotation = new THREE.Quaternion().setFromAxisAngle(
+                new THREE.Vector3(0.0, 0.0, 1.0),
+                Math.PI / 2.0
+              );
+              threeObject.quaternion.multiply(rotation);
+            } else if (importResult.upVector === OV.Direction.Z) {
+              let rotation = new THREE.Quaternion().setFromAxisAngle(
+                new THREE.Vector3(1.0, 0.0, 0.0),
+                -Math.PI / 2.0
+              );
+              threeObject.quaternion.multiply(rotation);
+            }
+            resolve([importResult, threeObject]);
+          },
+        });
+      });
+    }
+  );
+  render.GetViewer().SetMainObject(threeObject);
+  let boundingSphere = render.viewer.GetBoundingSphere(() => {
+    return true;
+  });
+  render.viewer.AdjustClippingPlanesToSphere(boundingSphere);
+  if (render.parameters.camera) {
+    render.viewer.SetCamera(render.parameters.camera);
+  } else {
+    render.viewer.SetUpVector(OV.Direction.Y, false);
+    render.viewer.FitSphereToWindow(boundingSphere, false);
+  }
+
+  render.model = importResult.model;
+  if (render.parameters.onModelLoaded) {
+    render.parameters.onModelLoaded();
+  }
+};
 
 onMounted(() => {
   OV.SetExternalLibLocation('libs');
@@ -134,14 +268,17 @@ onMounted(() => {
       new OV.Coord3D(0, 0, 1),
       45
     ),
-    backgroundColor: new OV.RGBAColor(255, 255, 255, 255),
+    backgroundColor: new OV.RGBAColor(0, 0, 0, 0),
     onModelLoaded: () => {
       modelLoaded.value = true;
       viewerContainer.value.style.opacity = 1;
       onOptionsUpdate();
     },
   });
-  render.LoadModelFromUrlList(['step/DragonBurnerAssembly.step']);
+  axios.get('DragonBurnerAssembly.json').then((response) => {
+    modelSource = response.data;
+    loadModel(recolorModelSrc(modelSource));
+  });
 });
 
 const hotend_options = computed(() => {

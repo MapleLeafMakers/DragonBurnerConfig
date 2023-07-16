@@ -5,8 +5,8 @@
         <div
           :class="{ hidden: modelLoaded }"
           style="
-            color: grey;
-            height: 375px;
+            color: hsl(0, 0%, 50%);
+            height: 55vh;
             position: absolute;
             top: 16px;
             left: 16px;
@@ -31,22 +31,34 @@
         <div
           ref="viewerContainer"
           class="online_3d_viewer"
-          style="height: 375px; opacity: 0"
+          style="height: 55vh; opacity: 0"
         ></div>
-        <q-btn
-          fab-mini
-          class="bg-grey-1"
-          icon="mdi-palette"
-          style="position: absolute; top: 24px; left: 24px"
-          ><q-menu>
-            <q-color
-              :model-value="rgbToHex(modelColor)"
-              @update:model-value="onUpdateModelColor"
-              no-header
-              no-footer
-            />
-          </q-menu>
-        </q-btn>
+        <div
+          style="
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            display: flex;
+            flex-direction: column;
+          "
+        >
+          <q-btn
+            fab-mini
+            class="bg-grey-1"
+            icon="mdi-image-filter-center-focus"
+            @click="onRecenter"
+          />
+          <q-btn fab-mini class="bg-grey-1 q-mt-sm" icon="mdi-palette"
+            ><q-menu>
+              <q-color
+                :model-value="rgbToHex(modelColor)"
+                @update:model-value="onUpdateModelColor"
+                no-header
+                no-footer
+              />
+            </q-menu>
+          </q-btn>
+        </div>
       </div>
       <div class="col-xs-12 col-md-6">
         <q-select
@@ -102,16 +114,16 @@
           v-model="adxl_mount"
           @update:model-value="onOptionsUpdate"
         />
+        <div class="q-mt-xl" style="text-align: center">
+          <q-btn
+            :disable="!canSubmit"
+            color="primary"
+            icon="download"
+            label="Download STL Files"
+            @click="download"
+          />
+        </div>
       </div>
-    </div>
-    <div class="row justify-center">
-      <q-btn
-        :disable="!canSubmit"
-        color="primary"
-        icon="download"
-        label="Download STL Files"
-        @click="download"
-      />
     </div>
   </q-page>
 </template>
@@ -133,6 +145,7 @@ const hotend = ref<string>();
 const probe = ref<string>('');
 const nozzle_led = ref<string>('');
 const logo_led = ref<string>('');
+const meshNodeMap = new Map<number, string>();
 
 let defaultColor: { r: number; g: number; b: number } = { r: 142, g: 41, b: 0 };
 try {
@@ -142,7 +155,12 @@ try {
 }
 
 const modelColor = ref<{ r: number; g: number; b: number }>(defaultColor);
-
+const defaultCamera = new OV.Camera(
+  new OV.Coord3D(40, -120, 0),
+  new OV.Coord3D(0, 0, 0),
+  new OV.Coord3D(0, 0, 1),
+  45
+);
 const adxl_mount = ref<boolean>(false);
 const hotend_fan_size = ref<string>('30mm');
 const modelLoaded = ref<boolean>(false);
@@ -154,6 +172,10 @@ const canSubmit = computed(() => {
   return extruder.value && hotend.value;
 });
 
+const onRecenter = () => {
+  render.GetViewer().navigation.MoveCamera(defaultCamera.Clone(), 30);
+};
+
 const onUpdateModelColor = (color: string) => {
   modelColor.value = hexToRgb(color);
   loadModel(recolorModelSrc(modelSource));
@@ -161,24 +183,36 @@ const onUpdateModelColor = (color: string) => {
 };
 
 const getMeshColor = (mesh: any) => {
+  // Clear
   if (mesh.name.startsWith('[c]_')) {
     return [0.8, 0.8, 0.8];
   }
 
+  // Hotends
+  if (mesh.name.startsWith('Hotend_')) {
+    return [...mesh.color];
+  }
+
+  // Extruders
+  if (mesh.name.startsWith('Extruder_')) {
+    return [...mesh.color];
+  }
+
+  // Fan Colors
   if (
     ['4010 Blower Fan', '3010 Axial Fan', '2510 Axial Fan'].indexOf(
       mesh.name
-    ) === -1
+    ) !== -1
   ) {
-    return [
-      modelColor.value.r / 255,
-      modelColor.value.g / 255,
-      modelColor.value.b / 255,
-    ];
-  } else {
     return [0.23, 0.23, 0.23];
-  };
-  return mesh.color;
+  }
+
+  // Use the selected Color.
+  return [
+    modelColor.value.r / 255,
+    modelColor.value.g / 255,
+    modelColor.value.b / 255,
+  ];
 };
 
 const recolorModelSrc = (modelSrc: any) => {
@@ -192,6 +226,7 @@ const recolorModelSrc = (modelSrc: any) => {
 };
 
 const loadModel = async (modelSrc) => {
+  console.log(modelSrc);
   const [importResult, threeObject] = await new Promise<[OV.ImportResult, any]>(
     (resolve, reject) => {
       const importer = render.modelLoader.importer.importers.filter((i) =>
@@ -264,12 +299,7 @@ onMounted(() => {
   // init all viewers on the page
   const el = document.querySelector('.online_3d_viewer');
   render = new OV.EmbeddedViewer(el as HTMLElement, {
-    camera: new OV.Camera(
-      new OV.Coord3D(40, -120, 0),
-      new OV.Coord3D(0, 0, 0),
-      new OV.Coord3D(0, 0, 1),
-      45
-    ),
+    camera: defaultCamera.Clone(),
     backgroundColor: new OV.RGBAColor(0, 0, 0, 0),
     onModelLoaded: () => {
       modelLoaded.value = true;
@@ -277,8 +307,13 @@ onMounted(() => {
       onOptionsUpdate();
     },
   });
-  axios.get('DragonBurnerAssembly.json').then((response) => {
+  axios.get('DragonBurnerAssembly.json.gz').then((response) => {
     modelSource = response.data;
+    for (let node of modelSource.root.children[0].children) {
+      for (let meshId of node.meshes) {
+        meshNodeMap.set(meshId, node.name);
+      }
+    }
     loadModel(recolorModelSrc(modelSource));
   });
 });
@@ -314,11 +349,22 @@ const onOptionsUpdate = () => {
     stl.replace(/\.stl$/i, '').replaceAll('/', '__')
   );
 
+  let meshIdx = 0;
   render.GetViewer().mainModel.EnumerateMeshes((mesh) => {
-    const show =
+    let show =
       visible_components.indexOf(mesh.name) !== -1 ||
       always_components.indexOf(mesh.name) !== -1;
+
+    if (!show) {
+      show = meshNodeMap.get(meshIdx) === `Hotend_${hotend.value}`;
+    }
+
+    if (!show) {
+      show = meshNodeMap.get(meshIdx) === `Extruder_${extruder.value}`;
+    }
+
     mesh.visible = show;
+    meshIdx++;
   });
 
   render.GetViewer().Render();

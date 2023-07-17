@@ -40,7 +40,7 @@ jobs:
           git add -v assets/
           git add -v icons/
           git add -v img/
-          git add -v DragonBurnerAssembly.json
+          git add -v DragonBurnerAssembly.json.gz
           git add -v libs/
           git add favicon.ico
           git commit -m 'Built from ${{ github.ref }}'

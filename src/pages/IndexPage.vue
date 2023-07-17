@@ -294,6 +294,14 @@ const loadModel = async (modelSrc) => {
   }
 };
 
+function isArrayOrTypedArray(x) {
+  return (
+    Array.isArray(x) ||
+    (ArrayBuffer.isView(x) &&
+      Object.prototype.toString.call(x) !== '[object DataView]')
+  );
+}
+
 onMounted(() => {
   OV.SetExternalLibLocation('libs');
   // init all viewers on the page
@@ -307,8 +315,13 @@ onMounted(() => {
       onOptionsUpdate();
     },
   });
+
   axios.get('DragonBurnerAssembly.json.gz').then((response) => {
-    console.log('typeof', typeof response);
+    console.log(
+      'typeof',
+      typeof response.data,
+      isArrayOrTypedArray(response.data)
+    );
     modelSource = response.data;
     for (let node of modelSource.root.children[0].children) {
       for (let meshId of node.meshes) {

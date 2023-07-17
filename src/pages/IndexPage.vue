@@ -308,6 +308,7 @@ onMounted(() => {
     },
   });
   axios.get('DragonBurnerAssembly.json.gz').then((response) => {
+    console.log('typeof', typeof response);
     modelSource = response.data;
     for (let node of modelSource.root.children[0].children) {
       for (let meshId of node.meshes) {

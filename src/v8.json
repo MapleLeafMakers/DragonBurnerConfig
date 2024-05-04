@@ -1,0 +1,79 @@
+{
+  "hotends": {
+    "Bambu Lab X1": "Bambu_Mount.stl",
+    "Dragon Ace HF": "Dragon_Ace_HF_Mount.stl",
+    "Dragon": "Dragon_Mount.stl",
+    "Dragonfly BMS (7-fin)": "Dragonfly_BMS_7fin.stl",
+    "Dragonfly BMO": "Dragonfly_Mount.stl",
+    "NF Crazy": "NF_Crazy_Mount.stl",
+    "Rapido HF": "RapidoHF_Mount.stl",
+    "Revo Voron": "RevoVoron_Mount.stl",
+    "Creality Spider Pro": "SpiderPro_Mount.stl",
+    "V6 Groove-mount": ["V6_Mount_Front.stl", "V6_Mount_Rear.stl"]
+  },
+  "extruders": {
+    "Sherpa Micro": {
+      "extruder_mount": "Sherpa_Micro/Extruder_Mounts/Sherpa_Micro_Mount.stl",
+      "hotend_mounts": "Sherpa_Micro/Hotend_Mounts/"
+    },
+    "LGX-Lite": {
+      "extruder_mount": "Sherpa_Mini_pattern_mounts/Extruder_Mounts/LGX_Lite_Mount.stl",
+      "hotend_mounts": "Sherpa_Mini_pattern_mounts/Hotend_Mounts/"
+    },
+    "Sherpa Mini": {
+      "extruder_mount": "Sherpa_Mini_pattern_mounts/Extruder_Mounts/Sherpa_Mini_Mount.stl",
+      "hotend_mounts": "Sherpa_Mini_pattern_mounts/Hotend_Mounts/"
+    },
+    "G2SA (Sherpa Mount)": {
+      "extruder_mount": "Sherpa_Mini_pattern_mounts/Extruder_Mounts/G2SA_Sherpa_Mount.stl",
+      "hotend_mounts": "Sherpa_Mini_pattern_mounts/Hotend_Mounts/"
+    },
+    "Orbiter v1.5": {
+      "extruder_mount": "Orbiter_v1.5/Extruder_Mounts/Orbiter1.5_Mount.stl",
+      "hotend_mounts": "Orbiter_v1.5/Hotend_Mounts/"
+    },
+    "Orbiter v2": {
+      "extruder_mount": "Orbiter_v2_pattern_mounts/Extruder_Mounts/Orbiter2_Mount.stl",
+      "hotend_mounts": "Orbiter_v2_pattern_mounts/Hotend_Mounts/"
+    },
+    "G2SA (Orbiter Mount)": {
+      "extruder_mount": "Orbiter_v2_pattern_mounts/Extruder_Mounts/G2SA_Orbiter_Mount.stl",
+      "hotend_mounts": "Orbiter_v2_pattern_mounts/Hotend_Mounts/"
+    },
+    "Wristwatch BMG": {
+      "extruder_mount": "Orbiter_v2_pattern_mounts/Extruder_Mounts/WristWatch_BMG_Mount.stl",
+      "hotend_mounts": "Orbiter_v2_pattern_mounts/Hotend_Mounts/"
+    },
+    "Wristwatch G2": {
+      "extruder_mount": "Orbiter_v2_pattern_mounts/Extruder_Mounts/WristWatch_G2_Mount.stl",
+      "hotend_mounts": "Orbiter_v2_pattern_mounts/Hotend_Mounts/"
+    },
+    "Double Folded Ascender": {
+      "extruder_mount": "Double_Folded_Ascender/Extruder_Mounts/DFA_Mount.stl",
+      "hotend_mounts": "Double_Folded_Ascender/Hotend_Mounts/"
+    }
+  },
+  "logos": {
+    "Voron": { "cowls": "Cowls/" },
+    "Micron": { "cowls": "Micron_Cowls/" },
+    "PFA": { "cowls": "PFA_Cowls/" },
+    "Salad Fork": { "cowls": "SaladFork_Cowls/" }
+  },
+  "probes": {
+    "No Probe": "NoProbe",
+    "KlickyNG": "KlickyNG",
+    "Klicky": "Klicky",
+    "SlideSwipe": "SlideSwipe",
+    "ZeroClick": "ZeroClick"
+  },
+  "nozzle_leds": {
+    "NeoPixel": "NeoPixel",
+    "Sequin": "Sequin"
+  },
+  "logo_led": {
+    "Rainbow Barf": "RainbowBarf",
+    "NeoPixel": "NeoPixel",
+    "Sequin": "Sequin",
+    "RGB Sequin": "Sequin_RGB"
+  }
+}

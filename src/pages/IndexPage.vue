@@ -213,7 +213,7 @@ const download = async () => {
     const fileUrl = `https://raw.githubusercontent.com/chirpy2605/voron/main/V0/Dragon_Burner/STLs/v0.2/${f}`;
     const content = (await axios.get(fileUrl, { responseType: 'arraybuffer' }))
       .data;
-    const baseName = f.indexOf('/') === -1 ? f : f.split('/')[1];
+    const baseName = f.split('/').reverse()[0];
     zip.file(baseName, content, { binary: true });
   }
   const zipFile = await zip.generateAsync({ type: 'blob' });

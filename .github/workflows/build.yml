@@ -21,7 +21,6 @@ jobs:
       - name: Build
         run: |
           npm install
-          node --experimental-wasm-eh scripts/step2json.js DragonBurnerAssembly.step | gzip > public/DragonBurnerAssembly.json.gz
           npm run build
 
       - name: Publish to GH Pages
@@ -40,8 +39,6 @@ jobs:
           git add -v assets/
           git add -v icons/
           git add -v img/
-          git add -v DragonBurnerAssembly.json.gz
-          git add -v libs/
           git add favicon.ico
           git commit -m 'Built from ${{ github.ref }}'
           git push origin gh-pages

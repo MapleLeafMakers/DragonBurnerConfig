@@ -2,7 +2,9 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-toolbar-title> Dragon Burner <strong>v7</strong> Configurator NOTE: This is not for v8!</q-toolbar-title>
+        <q-toolbar-title>
+          Dragon Burner <strong>v8</strong> Configurator</q-toolbar-title
+        >
         <q-space />
         <q-btn
           flat

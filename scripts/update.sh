@@ -4,4 +4,4 @@ gh api '/repos/chirpy2605/voron/git/trees/{branch}?recursive=true' -q '.tree[]|s
     sed -e 's/^V0\/Dragon_Burner\/STLs\/v0.2\//"/' | \
     sed -e 's/$/",/' | \
     sed '$ s/.$/\]/' | \
-    sed '1s;^;[;' > src/files.json
+    sed '1s/^/[/' > src/files.json

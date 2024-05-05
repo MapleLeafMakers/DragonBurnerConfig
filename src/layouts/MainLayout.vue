@@ -3,8 +3,11 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title>
-          Dragon Burner <strong>v8</strong> Configurator</q-toolbar-title
-        >
+          <div class="flex">
+            <img src="/icons/favicon-32x32.png" class="header-icon" />
+            <div class="q-ml-sm">Dragon Burner v8 Configurator</div>
+          </div>
+        </q-toolbar-title>
         <q-space />
         <q-btn
           flat

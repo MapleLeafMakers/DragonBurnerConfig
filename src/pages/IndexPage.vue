@@ -91,7 +91,7 @@
 
         <div class="q-mt-xl" style="text-align: center">
           <q-btn
-            :disable="!canSubmit"
+            :disable="!complete"
             color="primary"
             icon="download"
             label="Download STL Files"

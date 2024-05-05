@@ -59,7 +59,13 @@
   },
   "rear_braces": ["Loop", "Straight"],
   "logos": ["Voron", "PFA", "Micron", "SaladFork"],
-  "probes": ["KlickyNG", "Klicky", "SlideSwipe", "ZeroClick"],
+  "probes": {
+    "No Probe": "NoProbe",
+    "Klicky NG": "KlickyNG",
+    "Klicky": "Klicky",
+    "SlideSwipe": "SlideSwipe",
+    "ZeroClick": "ZeroClick"
+  },
   "nozzle_leds": ["NeoPixel", "Sequin"],
   "logo_led": ["RainbowBarf", "Neopixel", "Sequin", "Sequin_RGB"],
   "files": [

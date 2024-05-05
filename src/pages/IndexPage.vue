@@ -20,9 +20,8 @@
 
         <q-select
           v-model="probe"
-          :options="info.probes"
-          label="Probe (optional)"
-          clearable
+          :options="Object.keys(info.probes)"
+          label="Probe"
           @update:model-value="onOptionsUpdate"
         />
 
@@ -113,7 +112,7 @@ import axios from 'axios';
 
 const extruder = ref<string>();
 const hotend = ref<string>();
-const probe = ref<string>();
+const probe = ref<string>(Object.keys(info.probes)[0]);
 const nozzle_leds = ref<string>();
 const logo_led = ref<string>();
 const logo = ref<string>(info.logos[0]);

@@ -8,6 +8,8 @@
           :options="Object.keys(info.extruders)"
           label="Extruder"
           @update:model-value="onOptionsUpdate"
+          :error="!!hotendExtruderError"
+          :error-message="hotendExtruderError"
         />
 
         <q-select
@@ -16,6 +18,8 @@
           :options="Object.keys(info.hotends)"
           label="Hotend"
           @update:model-value="onOptionsUpdate"
+          :error="!!hotendExtruderError"
+          :error-message="hotendExtruderError"
         />
 
         <q-select
@@ -23,6 +27,18 @@
           :options="Object.keys(info.probes)"
           label="Probe"
           @update:model-value="onOptionsUpdate"
+          :error="!!probeLogoError"
+          :error-message="probeLogoError"
+        />
+
+        <q-select
+          v-model="logo"
+          label="Logo"
+          :options="info.logos"
+          @update:model-value="onOptionsUpdate"
+          :error="!!probeLogoError"
+          :error-message="probeLogoError"
+          bottom-slots
         />
 
         <q-select
@@ -31,6 +47,7 @@
           label="Nozzle LEDs (optional)"
           clearable
           @update:model-value="onOptionsUpdate"
+          bottom-slots
         />
 
         <q-select
@@ -39,6 +56,7 @@
           label="Logo LED (optional)"
           clearable
           @update:model-value="onOptionsUpdate"
+          bottom-slots
         />
 
         <q-select
@@ -46,13 +64,7 @@
           label="Hotend Fan"
           :options="['30mm', '25mm']"
           @update:model-value="onOptionsUpdate"
-        />
-
-        <q-select
-          v-model="logo"
-          label="Logo"
-          :options="info.logos"
-          @update:model-value="onOptionsUpdate"
+          bottom-slots
         />
 
         <q-select
@@ -61,6 +73,7 @@
           :options="info.rear_braces"
           @update:model-value="onOptionsUpdate"
           clearable
+          bottom-slots
         />
 
         <q-select
@@ -69,6 +82,7 @@
           clearable
           :options="Object.keys(info.adxl_mounts)"
           @update:model-value="onOptionsUpdate"
+          bottom-slots
         />
 
         <q-option-group
@@ -79,6 +93,7 @@
           type="checkbox"
           v-model="extras"
           @update:model-value="onOptionsUpdate"
+          bottom-slots
         />
       </div>
       <div class="col-xs-12 col-md-6">
@@ -106,16 +121,22 @@
 import { ref, computed, reactive } from 'vue';
 
 import info from 'src/v8.json';
+import files from 'src/files.json';
+console.log(files);
 // import axios from 'axios';
 import JSZip from 'jszip';
 import axios from 'axios';
 
 const extruder = ref<string>();
 const hotend = ref<string>();
+const hotendExtruderError = ref<string>();
 const probe = ref<string>(Object.keys(info.probes)[0]);
+const logo = ref<string>(info.logos[0]);
+const probeLogoError = ref<string>();
+
 const nozzle_leds = ref<string>();
 const logo_led = ref<string>();
-const logo = ref<string>(info.logos[0]);
+
 const adxl_mount = ref<string>();
 const hotend_fan_size = ref<string>('30mm');
 const rear_brace = ref<string>();
@@ -130,7 +151,11 @@ const canSubmit = computed(() => {
 });
 
 const stlExists = (f: string) => {
-  return info.files.indexOf(f) != -1;
+  const pos = files.indexOf(f);
+  if (pos == -1) {
+    console.error(`${f} doesn't exist`);
+  }
+  return pos != -1;
 };
 
 const onOptionsUpdate = () => {
@@ -153,25 +178,39 @@ const onOptionsUpdate = () => {
   if (extruder.value && hotend.value) {
     const extruderInfo = info.extruders[extruder.value];
     stlFiles.value.push(extruderInfo.extruder_mount);
-    const selectedHotendFiles = Array.isArray(info.hotends[hotend.value])
-      ? info.hotends[hotend.value]
-      : [info.hotends[hotend.value]];
+    const selectedHotendFiles = (
+      Array.isArray(info.hotends[hotend.value])
+        ? info.hotends[hotend.value]
+        : [info.hotends[hotend.value]]
+    ).map((f) => extruderInfo.hotend_mounts + f);
 
-    stlFiles.value.push(
-      ...selectedHotendFiles.map((f) => extruderInfo.hotend_mounts + f)
-    );
+    if (!selectedHotendFiles.every(stlExists)) {
+      console.log('Invalid', selectedHotendFiles);
+      hotendExtruderError.value = 'Hotend/Extruder Combination is Unsupported';
+    } else {
+      console.log('valid');
+      hotendExtruderError.value = undefined;
+    }
+
+    stlFiles.value.push(...selectedHotendFiles);
   } else {
     complete.value = false;
   }
 
+  probeLogoError.value = undefined;
   if (logo.value) {
     const cat_ears = extras.value.indexOf('cat_ears') != -1;
     const cowlFile = `Cowls/${logo.value}/${cat_ears ? 'Cat_Cowls/' : ''}Cowl_${
-      probe.value ? probe.value : 'NoProbe'
+      info.probes[probe.value]
     }.stl`;
-    const diffuserFile = `Cowls/${logo.value}/[c]_${logo.value}_Diffuser.stl`;
-    stlFiles.value.push(cowlFile);
-    stlFiles.value.push(diffuserFile);
+    if (!stlExists(cowlFile)) {
+      probeLogoError.value = 'Probe/Logo Combination is Unsupported';
+      console.log(cowlFile);
+    } else {
+      const diffuserFile = `Cowls/${logo.value}/[c]_${logo.value}_Diffuser.stl`;
+      stlFiles.value.push(cowlFile);
+      stlFiles.value.push(diffuserFile);
+    }
   } else {
     complete.value = false;
   }
@@ -200,8 +239,6 @@ const onOptionsUpdate = () => {
   if (rear_brace.value) {
     stlFiles.value.push(`Brace_${rear_brace.value}.stl`);
   }
-
-  console.log(stlFiles);
   console.assert(stlFiles.value.every(stlExists));
 };
 

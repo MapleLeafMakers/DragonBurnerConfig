@@ -122,7 +122,7 @@ import { ref, computed, reactive } from 'vue';
 
 import info from 'src/v8.json';
 import files from 'src/files.json';
-console.log(files);
+
 // import axios from 'axios';
 import JSZip from 'jszip';
 import axios from 'axios';
@@ -187,12 +187,12 @@ const onOptionsUpdate = () => {
     if (!selectedHotendFiles.every(stlExists)) {
       console.log('Invalid', selectedHotendFiles);
       hotendExtruderError.value = 'Hotend/Extruder Combination is Unsupported';
+      complete.value = false;
     } else {
       console.log('valid');
       hotendExtruderError.value = undefined;
+      stlFiles.value.push(...selectedHotendFiles);
     }
-
-    stlFiles.value.push(...selectedHotendFiles);
   } else {
     complete.value = false;
   }
@@ -206,6 +206,7 @@ const onOptionsUpdate = () => {
     if (!stlExists(cowlFile)) {
       probeLogoError.value = 'Probe/Logo Combination is Unsupported';
       console.log(cowlFile);
+      complete.value = false;
     } else {
       const diffuserFile = `Cowls/${logo.value}/[c]_${logo.value}_Diffuser.stl`;
       stlFiles.value.push(cowlFile);

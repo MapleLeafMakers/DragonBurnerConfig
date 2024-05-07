@@ -1,6 +1,6 @@
 {
   "name": "dragonburnerconfig",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "A tool to help configure a Dragon burner toolhead",
   "productName": "DragonBurner Configurator",
   "author": "MapleLeafMakers",

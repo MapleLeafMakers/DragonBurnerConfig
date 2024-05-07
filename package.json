@@ -1,4 +1,5 @@
 {
+  "homepage": "https://dragonburner.voron.zip/DragonBurnerConfig",
   "name": "dragonburnerconfig",
   "version": "0.0.1",
   "description": "A tool to help configure a Dragon burner toolhead",
